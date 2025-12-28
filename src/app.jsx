@@ -78,6 +78,19 @@ function App() {
       result = result.filter(cafe => cafe.tags.includes(activeTag));
     }
 
+    // Default View Logic: Show only High Rated / Popular if no filter is active
+    const isFiltering = searchParams.term || 
+                        searchParams.category !== "Semua Kategori" || 
+                        searchParams.price !== "Harga" || 
+                        activeTag;
+
+    if (!isFiltering) {
+      // Show only top rated cafes (e.g., rating >= 4.7) as default recommendations
+      result = result.filter(cafe => cafe.rating >= 4.7);
+      // Optional: Sort by rating descending
+      result.sort((a, b) => b.rating - a.rating);
+    }
+
     setFilteredCafes(result);
   }, [searchParams, activeTag, data.cafes]);
 
@@ -131,7 +144,11 @@ function App() {
             <div className="container mx-auto px-4">
               <div className="flex justify-between items-end mb-8">
                  <div>
-                  <h2 className="text-3xl font-serif font-bold text-secondary mb-2">Rekomendasi Terbaik berdasarkan Rating & Popularitas</h2>
+                  <h2 className="text-3xl font-serif font-bold text-secondary mb-2">
+                    {searchParams.term || activeTag || searchParams.category !== "Semua Kategori" || searchParams.price !== "Harga"
+                      ? "Hasil Pencarian" 
+                      : "Rekomendasi Terbaik Pilihan Editor"}
+                  </h2>
                   <p className="text-gray-500">
                     Menampilkan {filteredCafes.length} tempat kuliner 
                     {activeTag && ` dengan kategori "${activeTag}"`}
